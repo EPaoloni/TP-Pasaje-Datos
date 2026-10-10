@@ -1,0 +1,73 @@
+@model InscripcionViewModel
+@{
+    ViewData["Title"] = ViewBag.Titulo;
+    var talleres = ViewData["Talleres"] as List<string>;
+    var ultimoProcesado = Context.Session.Get<InscripcionViewModel>("UltimoProcesado");
+}
+
+<h2>@ViewBag.Titulo</h2>
+
+@if (TempData["MensajeResultado"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeResultado"]</div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Nueva inscripción</h4>
+        <form action="/Inscripciones/Registrar" method="post">
+            <div class="mb-3">
+                <label asp-for="NombreAlumno" class="form-label">Nombre del alumno</label>
+                <input asp-for="NombreAlumno" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Legajo" class="form-label">Legajo</label>
+                <input asp-for="Legajo" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="TallerSeleccionado" class="form-label">Taller</label>
+                <select asp-for="TallerSeleccionado" class="form-select">
+                    <option value="">-- Seleccione un taller --</option>
+                    @if (talleres != null)
+                    {
+                        foreach (var taller in talleres)
+                        {
+                            <option value="@taller">@taller</option>
+                        }
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <h4>Talleres disponibles</h4>
+        <ul class="list-group mb-4">
+            @if (talleres != null)
+            {
+                foreach (var taller in talleres)
+                {
+                    <li class="list-group-item">@taller</li>
+                }
+            }
+        </ul>
+
+        <h4>Último alumno procesado</h4>
+        @if (ultimoProcesado != null)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <p class="mb-1"><strong>Nombre:</strong> @ultimoProcesado.NombreAlumno</p>
+                    <p class="mb-1"><strong>Legajo:</strong> @ultimoProcesado.Legajo</p>
+                    <p class="mb-1"><strong>Taller:</strong> @ultimoProcesado.TallerSeleccionado</p>
+                    <p class="mb-0"><strong>Fecha:</strong> @ultimoProcesado.FechaInscripcion.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Aún no se procesaron inscripciones en esta sesión.</p>
+        }
+    </div>
+</div>
